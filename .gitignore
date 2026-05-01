@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+*.log
+.DS_Store
+research_data/
+private_data/
+*.npz
+*.parquet
