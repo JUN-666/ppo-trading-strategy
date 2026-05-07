@@ -24,14 +24,14 @@ The repo is structured to look like a research-to-production bridge: data schema
   - drawdown kill switch
   - order-rate throttling
 - Evaluation metrics: net profit margin, win ratio, round-trip trade statistics.
-- Private TAIFEX feature-store validation via `MarketDataSchema`.
+- TAIFEX feature-store validation via `MarketDataSchema`.
 - Post-training quantization hook for deployment-oriented experiments.
 
 ## Architecture
 
 ```mermaid
 flowchart TD
-    A["Private TAIFEX Tick / LOB Features"] --> B["MarketDataSchema"]
+    A["TAIFEX Tick / LOB Features"] --> B["MarketDataSchema"]
     B --> C["TradingEnv"]
     C --> D["PPO Agent"]
     D --> E["RiskManager"]
@@ -48,7 +48,7 @@ hft_agent/
   models/actor_critic.py          # Policy/value network
   ppo/ppo_agent.py                # PPO training logic
   risk/risk_manager.py            # Pre-trade risk controls
-  utils/market_data_schema.py     # Private feature-store validation
+  utils/market_data_schema.py     # Feature-store validation
   utils/evaluation.py             # Strategy metrics
   quantization/ptq.py             # Post-training quantization hook
 scripts/
@@ -62,10 +62,6 @@ main.py                           # CLI entry point
 
 ```bash
 python main.py describe
-python main.py train --data private_data/taifex_lob_features.parquet --model trained_models/ppo_actor_critic_hft.pth
-python main.py evaluate --data private_data/taifex_lob_features.parquet --model trained_models/ppo_actor_critic_hft.pth
+python main.py train --data datasets/taifex_lob_features.parquet --model trained_models/ppo_actor_critic_hft.pth
+python main.py evaluate --data datasets/taifex_lob_features.parquet --model trained_models/ppo_actor_critic_hft.pth
 ```
-
-## Data Notes
-
-The public repository contains model code, environment logic, and research workflow. Exchange-licensed tick data and internal feature stores are intentionally mounted outside git.
