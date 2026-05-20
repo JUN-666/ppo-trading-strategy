@@ -1,39 +1,39 @@
-# TAIFEX PPO HFT Agent
+﻿# PPO Trading Strategy
 
-> Reinforcement-learning trading research framework for TAIFEX-style order-book features, execution-cost modeling, intraday PnL accounting, and risk-controlled PPO agents.
+> Reinforcement-learning trading strategy research framework for order-book features, execution-cost modeling, intraday PnL accounting, and risk-controlled PPO training.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![RL](https://img.shields.io/badge/Algorithm-PPO-orange)
-![Market](https://img.shields.io/badge/Market-TAIFEX%20Microstructure-green)
+![Market](https://img.shields.io/badge/Domain-Order%20Book%20Trading-green)
 ![Risk](https://img.shields.io/badge/Risk-Pre--Trade%20Controls-red)
 
 ## Overview
 
-This project implements a high-frequency trading agent around **Proximal Policy Optimization (PPO)**. The environment follows event-driven market simulation assumptions instead of simple OHLC backtests: actions execute on bid/ask, fees and tax are charged, positions are bounded, and daily PnL / round-trip statistics are tracked.
+This project implements a reinforcement-learning trading strategy framework based on **Proximal Policy Optimization (PPO)**. Instead of using a simple OHLC backtest, the environment follows an event-driven market simulation design: actions are executed on bid/ask prices, trading costs are included, positions are bounded, and intraday PnL / round-trip statistics are tracked during training and evaluation.
 
-The repo is structured to look like a research-to-production bridge: data schema validation, trading environment, PPO agent, risk manager, evaluation utilities, checkpointing, and quantization hooks are separate modules.
+The repository is structured as a research-to-production style pipeline. Data schema validation, trading environment design, PPO training logic, risk control, evaluation utilities, checkpointing, and quantization hooks are separated into independent modules so each part can be tested or extended without rewriting the whole system.
 
 ## Feature Highlights
 
-- Gymnasium-compatible trading environment for daily tick episodes.
-- Bid/ask execution with handling fee, settlement fee, and transaction tax modeling.
-- Actor-critic PPO agent with clipped objective, entropy regularization, and gradient clipping.
-- Pre-trade risk layer:
-  - max position
-  - max daily loss
+- Gymnasium-compatible trading environment for daily tick-level episodes.
+- Bid/ask execution simulation with handling fee, settlement fee, and transaction tax modeling.
+- Actor-critic PPO model with clipped objective, entropy regularization, and gradient clipping.
+- Pre-trade risk layer with:
+  - max position control
+  - max daily loss control
   - drawdown kill switch
   - order-rate throttling
-- Evaluation metrics: net profit margin, win ratio, round-trip trade statistics.
-- TAIFEX feature-store validation via `MarketDataSchema`.
+- Strategy evaluation metrics including net profit margin, win ratio, and round-trip trade statistics.
+- Feature-store validation through `MarketDataSchema`.
 - Post-training quantization hook for deployment-oriented experiments.
 
 ## Architecture
 
 ```mermaid
 flowchart TD
-    A["TAIFEX Tick / LOB Features"] --> B["MarketDataSchema"]
+    A["Tick / Order-Book Features"] --> B["MarketDataSchema"]
     B --> C["TradingEnv"]
-    C --> D["PPO Agent"]
+    C --> D["PPO Strategy"]
     D --> E["RiskManager"]
     E --> C
     D --> F["Checkpoint / Quantization"]
@@ -62,6 +62,10 @@ main.py                           # CLI entry point
 
 ```bash
 python main.py describe
-python main.py train --data datasets/taifex_lob_features.parquet --model trained_models/ppo_actor_critic_hft.pth
-python main.py evaluate --data datasets/taifex_lob_features.parquet --model trained_models/ppo_actor_critic_hft.pth
+python main.py train --data datasets/order_book_features.parquet --model trained_models/ppo_actor_critic.pth
+python main.py evaluate --data datasets/order_book_features.parquet --model trained_models/ppo_actor_critic.pth
 ```
+
+## Project Positioning
+
+This repository focuses on building a practical reinforcement-learning research workflow for order-book trading strategies. The goal is to connect market microstructure features, execution-cost-aware simulation, PPO-based policy learning, and risk-controlled evaluation in one reproducible framework.
